@@ -1,1 +1,1 @@
-https://t3-mocha.vercel.app/
+https://t3-novikovyu.vercel.app/
