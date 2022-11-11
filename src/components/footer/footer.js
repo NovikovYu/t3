@@ -4,37 +4,35 @@ import PropTypes from 'prop-types'
 import TasksFilter from '../tasks-filter/tasks-filter'
 import './footer.css'
 
-class Footer extends React.Component {
-  static defaultProps = {
-    todos: [],
-    itemsLeftCounter: 0,
-    onClearCompleted: () => {},
-    showMode: 'all',
-    onChangeShowMode: () => {},
-  }
+const Footer = (props) => {
+  const { todos, itemsLeftCounter, onClearCompleted, showMode, onChangeShowMode } = props
+  return (
+    <footer className="footer">
+      <span className="todo-count">{itemsLeftCounter} items left</span>
 
-  static propTypes = {
-    todos: PropTypes.array,
-    itemsLeftCounter: PropTypes.number,
-    onClearCompleted: PropTypes.func,
-    showMode: PropTypes.string,
-    onChangeShowMode: PropTypes.func,
-  }
+      <TasksFilter todos={todos} showMode={showMode} onChangeShowMode={onChangeShowMode} />
 
-  render() {
-    const { todos, itemsLeftCounter, onClearCompleted, showMode, onChangeShowMode } = this.props
-    return (
-      <footer className="footer">
-        <span className="todo-count">{itemsLeftCounter} items left</span>
+      <button className="clear-completed" onClick={onClearCompleted}>
+        Clear completed
+      </button>
+    </footer>
+  )
+}
 
-        <TasksFilter todos={todos} showMode={showMode} onChangeShowMode={onChangeShowMode} />
+Footer.defaultProps = {
+  todos: [],
+  itemsLeftCounter: 0,
+  onClearCompleted: () => {},
+  showMode: 'all',
+  onChangeShowMode: () => {},
+}
 
-        <button className="clear-completed" onClick={onClearCompleted}>
-          Clear completed
-        </button>
-      </footer>
-    )
-  }
+Footer.propTypes = {
+  todos: PropTypes.array,
+  itemsLeftCounter: PropTypes.number,
+  onClearCompleted: PropTypes.func,
+  showMode: PropTypes.string,
+  onChangeShowMode: PropTypes.func,
 }
 
 export default Footer

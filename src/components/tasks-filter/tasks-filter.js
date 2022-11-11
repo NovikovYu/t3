@@ -2,40 +2,38 @@ import React from 'react'
 import './tasks-filter.css'
 import PropTypes from 'prop-types'
 
-class TasksFilter extends React.Component {
-  static defaultProps = {
-    showMode: 'all',
+const TasksFilter = (props) => {
+  const onChangeShowModeWithId = (e) => {
+    props.onChangeShowMode(e.target.name)
   }
 
-  static propTypes = {
-    showMode: PropTypes.string,
-  }
+  const { showMode } = props
 
-  onChangeShowModeWithId = (e) => {
-    this.props.onChangeShowMode(e.target.name)
-  }
+  let buttonsData = [
+    { name: 'all', label: 'All' },
+    { name: 'active', label: 'Active' },
+    { name: 'completed', label: 'Completed' },
+  ]
+  let btns = buttonsData.map(({ name, label }) => {
+    let claz = showMode === name ? 'selected' : ''
 
-  render() {
-    const { showMode } = this.props
+    return (
+      <li key={name}>
+        <button className={claz} name={name} onClick={onChangeShowModeWithId}>
+          {label}
+        </button>
+      </li>
+    )
+  })
+  return <ul className="filters">{btns}</ul>
+}
 
-    let buttonsData = [
-      { name: 'all', label: 'All' },
-      { name: 'active', label: 'Active' },
-      { name: 'completed', label: 'Completed' },
-    ]
-    let btns = buttonsData.map(({ name, label }) => {
-      let claz = showMode === name ? 'selected' : ''
+TasksFilter.defaultProps = {
+  showMode: 'all',
+}
 
-      return (
-        <li key={name}>
-          <button className={claz} name={name} onClick={this.onChangeShowModeWithId}>
-            {label}
-          </button>
-        </li>
-      )
-    })
-    return <ul className="filters">{btns}</ul>
-  }
+TasksFilter.propTypes = {
+  showMode: PropTypes.string,
 }
 
 export default TasksFilter

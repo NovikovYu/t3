@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 
 import NewTaskForm from '../new-task-form/new-task-form'
@@ -8,52 +8,49 @@ import './app.css'
 
 var defaultTimeStamp = formatDistanceToNow(new Date(2022, 10, 2))
 
-// var result = format(new Date(2014, 1, 11), 'MM/dd/yyyy')
+const App = () => {
+  let startId = 1000
 
-class App extends React.Component {
-  startId = 1000
-
-  state = {
-    toDoItems: [this.createEl('Deal 1'), this.createEl('Deal 2'), this.createEl('Deal 3'), this.createEl('Deal 4')],
-    showMode: 'all', // all, active, complited
-  }
-
-  createEl(description, date = defaultTimeStamp, time = 150) {
+  const createEl = (description, date = defaultTimeStamp, time = 150) => {
     return {
       liClassName: '',
       description: description,
       created: `created ${date} ago`,
       done: false,
-      id: this.startId++,
+      id: startId++,
       time: time,
     }
   }
 
-  deleteItem = (id) => {
-    let deadIndex = this.state.toDoItems.findIndex((el) => el.id === id)
+  const [toDoItems, setToDoItems] = useState([
+    createEl('Deal 1'),
+    createEl('Deal 2'),
+    createEl('Deal 3'),
+    createEl('Deal 4'),
+  ])
+  const [showMode, setShowMode] = useState('all')
 
-    let before = this.state.toDoItems.slice(0, deadIndex)
-    let after = this.state.toDoItems.slice(deadIndex + 1)
+  const deleteItem = (id) => {
+    let deadIndex = toDoItems.findIndex((el) => el.id === id)
+
+    let before = toDoItems.slice(0, deadIndex)
+    let after = toDoItems.slice(deadIndex + 1)
 
     let newArr = [...before, ...after]
 
-    this.setState((state) => {
-      return (state.toDoItems = newArr)
-    })
+    setToDoItems(newArr)
   }
 
-  addTask = (text, time) => {
-    this.setState(({ toDoItems }) => {
+  const addTask = (text, time) => {
+    setToDoItems((toDoItems) => {
       var timeStamp = formatDistanceToNow(new Date())
 
-      return {
-        toDoItems: [...toDoItems, this.createEl(text, timeStamp, time)],
-      }
+      return [...toDoItems, createEl(text, timeStamp, time)]
     })
   }
 
-  onDo = (id) => {
-    this.setState(({ toDoItems }) => {
+  const onDo = (id) => {
+    setToDoItems((toDoItems) => {
       let idx = toDoItems.findIndex((el) => el.id === id)
 
       let newEl = { ...toDoItems[idx] }
@@ -62,23 +59,19 @@ class App extends React.Component {
 
       let newArray = [...toDoItems.slice(0, idx), newEl, ...toDoItems.slice(idx + 1)]
 
-      return {
-        toDoItems: newArray,
-      }
+      return newArray
     })
   }
 
-  onClearCompleted = () => {
-    this.setState(({ toDoItems }) => {
+  const onClearCompleted = () => {
+    setToDoItems((toDoItems) => {
       let newArray = toDoItems.filter((el) => el.done === false)
 
-      return {
-        toDoItems: newArray,
-      }
+      return newArray
     })
   }
 
-  filter = (arr, showMode) => {
+  const filter = (arr, showMode) => {
     switch (showMode) {
       case 'all':
         return arr
@@ -91,41 +84,33 @@ class App extends React.Component {
     }
   }
 
-  onChangeShowMode = (showMode) => {
-    this.setState({ showMode })
+  const onChangeShowMode = (showMode) => {
+    setShowMode(showMode)
   }
 
-  render() {
-    const { toDoItems, showMode } = this.state
-    const itemsLeftCounter = toDoItems.filter((el) => el.done === false).length
+  const itemsLeftCounter = toDoItems.filter((el) => el.done === false).length
 
-    // что из списка задач показываем?
-    const filtredArr = this.filter(toDoItems, showMode)
+  const filtredArr = filter(toDoItems, showMode)
 
-    return (
-      <section className="todoapp">
-        <header className="header">
-          <h1>todos</h1>
-          <NewTaskForm addTask={this.addTask} />
-        </header>
-        <section className="main">
-          <TaskList todos={filtredArr} onDo={this.onDo} onDelete={this.deleteItem} />
+  return (
+    <section className="todoapp">
+      <header className="header">
+        <h1>todos</h1>
+        <NewTaskForm addTask={addTask} />
+      </header>
+      <section className="main">
+        <TaskList todos={filtredArr} onDo={onDo} onDelete={deleteItem} />
 
-          <Footer
-            todos={filtredArr}
-            itemsLeftCounter={itemsLeftCounter}
-            showMode={showMode}
-            onChangeShowMode={this.onChangeShowMode}
-            onClearCompleted={this.onClearCompleted}
-          />
-        </section>
+        <Footer
+          todos={filtredArr}
+          itemsLeftCounter={itemsLeftCounter}
+          showMode={showMode}
+          onChangeShowMode={onChangeShowMode}
+          onClearCompleted={onClearCompleted}
+        />
       </section>
-    )
-  }
+    </section>
+  )
 }
-
-// function App() {
-
-// }
 
 export default App
